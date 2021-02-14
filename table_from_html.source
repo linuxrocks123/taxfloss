@@ -1,0 +1,1 @@
+cat tax_text_html.txt | sed 's/.*\">//' | sed 's/<.*//' | sed 's/,//' | sed 's/\t//g' > tax_text.txt

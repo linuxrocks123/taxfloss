@@ -1,0 +1,111 @@
+Create tax form line-based DSL.
+
+Uses:
+- Tax avoidance of all kinds.
+- Should be able to make forms to figure out, for instance, best
+  gift-giving amounts per year to avoid total estate and gift taxes.
+
+Language:
+- Has some form of ternary conditional, but no if statements or loops.
+- Has booleans, integers, and floats (double-precision) as its only
+  data types
+- Booleans can be added together like ints.
+- Commas and dollar signs are ignored characters.
+- There is an assert function.
+- No semicolons: language doesn't need them.
+- No whitespace significance: language doesn't need it.
+- Any double-quoted string is a comment and is ignored by the lexer.
+- Variables from other files may be referenced with dot notation.
+- Cyclic dependencies between variables are discovered by the
+  interpreter.
+- Has addition, subtraction, multiplication, division.
+- Has 1D and 2D arrays; indexes in arrays can be ranges so long as
+  they do not overlap.
+- := is used for defining variables without initializing them
+- = is used for defining variables as constants or in terms of other
+  variables.
+- <- is used for initializing variables to constants that were
+  previously defined without initialization.
+- Variables cannot be changed once initialized.
+- Variables can only have one line which initializes them.
+
+Syntax for ternary conditional:
+L40 = if (L1 or L3)
+         $6,350
+      elif (L2 or L5)
+         $12,700
+      else (L4)
+         $9,350
+
+The (L4) after the final else is considered an implicit assertion
+executed only when that branch is taken and is optional but
+recommended where appropriate.  It is also legal to put "assert"
+followed by a second set of parentheses containing an assertion after
+the if or elif condition that is only executed when the if or elif
+branch is taken.
+
+Syntax for 1D arrays:
+TABLE1 = [_] {0 < _ < 50 : 0, 51 < _ < 100 : 2}
+
+Syntax for 2D arrays:
+TABLE2D = [x][y] {
+                | 0 < y < 50 | 51 < y < 100 |
+  | 0 < x < 100 |    25      |      33      |
+  | 101 < x < 200 |  50      |      66      | }
+
+The double || is what initiates row breaks.
+
+For both 1D and 2D arrays, a constant is interpreted as a condition
+that the index must be exactly equal to that constant.
+
+Language looks like this:
+
+L1 := BOOLEAN "Single"
+L2 := BOOLEAN "Married filing jointly"
+L3 := BOOLEAN "Married filing separately"
+L4 := BOOLEAN "Head of household"  L5 := BOOLEAN "Qualifying widower"
+assert(L1 + L2 + L3 + L4 + L5 == 1) "You must specify exactly 1 filing status."
+
+If you want to downcast, do it like this.
+L2222 := INTEGER "Rounded"
+L2222 <- L2221 * 0.1
+
+This works because user input isn't requested until an undefined
+variable is actually used in a formula.  Casts from FLOAT to INTEGER
+are done by rounding, with exactly 0.5 rounding up, and not by
+truncating.
+
+Output:
+- Produce a line graph CSV on-demand where all variables but one are
+  held constant.
+- Produce a topological graph CSV on-demand where all variables but
+  two are held constant.
+- Support, as the data elements in the CSV:
+  - Total tax liability in dollars.
+  - Marginal tax liability in dollars (first derivative).
+  - Total tax liability as a percentage of income.
+  - Marginal tax liability as a percentage of income (first derivative)
+- Granularity ($1 or $10 or $50 or $100) should be configurable.
+
+Output CSVs can be plotted with GNUPlot or LibreOffice or just about
+anything else.  There should normally be spikes of marginal tax
+liability percentage of above 100% or below 0% that should point out
+places to focus tax planning effort.
+
+---
+
+Update 08-24-2018:
+- There should only be one numeric type: NUMBER.
+- No automatic conversions from NUMBER to BOOLEAN.
+- NUMBER should be implemented as decimal fixed-point math class.
+- NUMBER has 18 decimal digits of precision.
+- Division is implemented with truncation; the other operations are
+  straightforward.
+- Rounding and truncation operations should be implemented.
+- Rounding and truncation will regularly need to be done in order to
+  avoid runtime errors.
+- \ is rounding and \\ is truncation.
+- Syntax: 54.252 \ 2 == 54.25
+          54.252 \ 1 == 54.3
+          54.25 \ 0 == 54
+          54.25 \ -1 == 50

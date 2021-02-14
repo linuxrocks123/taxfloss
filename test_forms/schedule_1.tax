@@ -1,0 +1,23 @@
+L1 := NUMBER
+L2a := NUMBER
+L3 = 0 "Schedule C TODO"
+L4 = 0 "Form 4797 TODO"
+L5 = 0 "Schedule E TODO"
+L6 = 0 "Schedule F TODO"
+L7 := NUMBER
+L8 = f8889.L16
+L9 = L1 + L2a + L3 + L4 + L5 + L6 + L7 + L8
+
+L10 := NUMBER
+L11 = 0 "Form 2106 TODO"
+L12 = f8889.L13
+L13 = 0 "Form 3903 TODO"
+L14 = 0 "Schedule SE TODO"
+L15 := NUMBER
+L16 := NUMBER
+L17 := NUMBER
+L18a := NUMBER
+L19 = p590.ALLOWED_DEDUCTION
+L20 := NUMBER
+L21 = 0 "Form 8917 TODO"
+L22 = L10 + L11 + L12 + L13 + L14 + L15 + L16 + L17 + L18a + L19 + L20 + L21

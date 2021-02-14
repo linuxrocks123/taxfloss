@@ -1,0 +1,22 @@
+L1 := NUMBER "Single"
+L2 := NUMBER "Married filing jointly"
+L3 := NUMBER "Married filing separately"
+L4 := NUMBER "Head of household"  L5 := NUMBER "Qualifying widower"
+assert(L1 + L2 + L3 + L4 + L5 == 1) "You must specify exactly 1 filing status."
+what =
+       if(L1==1)
+           $6350
+       elif (L2==1)
+           $12700
+       elif (L4==1 or L5==1)
+           assert(L3!=1)
+           $9000
+       else
+           assert(L3==1)
+           -$500
+
+L1 <- 1
+L2 <- 0
+L3 <- 0
+L4 <- 0
+L5 <- 0

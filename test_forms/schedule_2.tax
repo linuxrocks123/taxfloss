@@ -1,0 +1,11 @@
+L1 = 0 "AMT Form 6251 TODO"
+L2 = f8962.EXCESS_REPAYMENT
+L3 = L1 + L2
+L4 = 0 "Schedule SE TODO"
+L5 = 0 "Social Security and Medicare TODO"
+L6 = 0 "IRA penalty TODO"
+L7a = 0 "Schedule H TODO"
+L7b = 0 "Form 5405 TODO"
+L8 = 0 "Form 8959 / 8960 / others TODO"
+L9 = 0 "Form 965-A TODO"
+L10 = L4 + L5 + L6 + L7a + L7b + L8

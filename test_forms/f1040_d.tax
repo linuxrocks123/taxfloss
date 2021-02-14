@@ -1,0 +1,19 @@
+L1a := NUMBER
+L1b := NUMBER
+L2 := NUMBER
+L3 := NUMBER
+L4 = 0 "Forms 6262/4684/6781/8824 TODO"
+L5 := NUMBER
+L6 = 0 "Capital Loss Carryover TODO"
+L7 = L1a + L1b + L2 + L3 + L4 + L5 + L6
+
+L8a := NUMBER
+L8b := NUMBER
+L9 := NUMBER
+L10 := NUMBER
+L11 = 0 "Forms 4797p1/2439/6252/4684/6781/8824 TODO"
+L12 := NUMBER
+L13 := NUMBER
+L14 = 0 "Capital Loss Carryover TODO"
+L15 = L8a + L8b + L9 + L10 + L11 + L12 + L13 + L14
+L16 = L7 + L15

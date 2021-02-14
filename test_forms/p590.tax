@@ -1,0 +1,23 @@
+PHASEOUT_TABLE = [x] { f1040.Filing_Status==1 or f1040.Filing_Status==4 : $74000,
+                       f1040.Filing_Status==2 or f1040.Filing_Status==5 : $123000,
+                       f1040.Filing_Status==3 : $10000 }
+
+Employer_Plan := BOOLEAN
+Spouse_Employer_Plan := BOOLEAN
+Traditional_Contribution := NUMBER
+MAGI = f1040.Total_Income - (schedule_1.L10 + schedule_1.L11 + schedule_1.L12 + schedule_1.L13 + schedule_1.L14 + schedule_1.L15 + schedule_1.L16 + schedule_1.L17 + schedule_1.L18a)
+
+PERCENT_TABLE = [x] { Employer_Plan and (f1040.Filing_Status==2 or f1040.Filing_Status==5) : 0.3,
+                      Employer_Plan or Spouse_Employer_Plan : 0.6,
+                      true : 1.0 }
+
+L1 = PHASEOUT_TABLE[-1]
+L2 = MAGI
+L3 = if(L1 > L2) L1 - L2 else 0
+L4 = L3*PERCENT_TABLE[-1]
+L5 = f1040.L1 - schedule_1.L14 - schedule_1.L15
+assert(L5 >= Traditional_Contribution)
+L6 = Traditional_Contribution
+ALLOWED_DEDUCTION = if(L6 <= L5 and L6 <= L4) L6
+                    elif(L5 <= L6 and L5 <= L4) L5
+                    else L4

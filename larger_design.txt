@@ -1,0 +1,46 @@
+Provide a graphical product (or perhaps products: one done as a single
+dialog box and another as a wizard) that allows filling in a multitude
+of government forms (will require parsing comments; perhaps lex
+comments and allow them only at the end of a declaration in the
+parser).
+
+Provide support for more forms than TurboTax, and perhaps allow users
+to create their own forms.
+
+Use flpsed (warning: GPLv3) or imagemagick (Apachev2) to auto-fill
+forms for filing.
+
+Allow tax planning by allowing any one or two boxes to be selected for
+chart modeling against any single output (including total tax, average
+tax rate, and marginal tax rate).
+
+09-10-2018
+----------
+
+Idea: Modify the forms to be used for different but related projects,
+      like an individual and small-business tax return.  So form 1040
+      becomes psimmons_f1040.  The form will have to be modified to
+      prefix all foreign identifiers to have the same prefix.
+
+Then, allow specific identifiers to have their definitions canceled
+and defined in terms of an identifier from a related project.
+Something like:
+
+psimmons_f1040.L7 = simmonssystems_f1120.L13 * 0.9235
+psimmons_f1040.L9b = simmonssystems_f1120.L30 - simmonssystems_f1120.L31
+total_tax = psimmons_f1040.unlined_true_tax + simmonssystems_f1120.L31
+
+(Include in help files common formulae for self-employed individuals
+or couples or whatnot.)
+
+PDFs
+----
+
+IRS PDFs are interactive forms.  A tool like PDFBox or PoDoFo should
+be able to handle them.  flpsed or imagemagick are not required.
+
+Business Plan
+-------------
+
+Code for Taxicality is open-source and held by foundation.
+Forms are sold by subscription by a corporation.

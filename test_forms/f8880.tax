@@ -1,0 +1,35 @@
+L1a := NUMBER
+L1b := NUMBER
+L2a := NUMBER
+L2b := NUMBER
+L3a = L1a + L2a
+L3b = L1b + L2b
+L4a := NUMBER
+L4b := NUMBER
+L5a = if(L3a - L4a > 0) L3a - L4a else 0
+L5b = if(L3b - L4b > 0) L3b - L4b else 0
+L6a = if(L5a < $2000) L5a else $2000
+L6b = if(L5b < $2000) L5b else $2000
+L7 = L6a + L6b
+L8 = f1040.AGI
+
+SAVERS_OTHER = [x] { x <= $19250 : 0.5,
+                     x > $19250 and x <= $20750 : 0.2,
+                     x > $20750 and x <= $32000 : 0.1,
+                     x > $32000 : 0 }
+
+SAVERS_TABLE = [x][y] {
+         | f1040.Filing_Status==2 | f1040.Filing_Status==4 | true |
+|  true  | SAVERS_MARRIED[x] | SAVERS_HEADHOUSE[x] | SAVERS_OTHER[x] | }
+
+L9 = SAVERS_TABLE[L8][-1]
+L10 = L7 * L9
+
+CRL_L1 = f1040.L12b
+CRL_L2 = schedule_3.L1 + schedule_3.L2 + schedule_3.L3
+CRL_L3 = if(CRL_L1 - CRL_L2 > 0) CRL_L1 - CRL_L2 else 0
+
+L11 = CRL_L3
+L12 = if(L10 < L11) L10 else L11
+
+CREDIT_AMOUNT = L12

@@ -1,0 +1,12 @@
+TAX_SINGLE = [x] { 0 <= x <= 9875 : x*0.1,
+                   9875 < x <= 40125 : TAX_SINGLE[9875]+(x-9875)*0.12,
+                   40125 < x <= 85525 : TAX_SINGLE[40125]+(x-40125)*0.22,
+                   85525 < x <= 163300 : TAX_SINGLE[85525]+(x-85525)*0.24,
+                   163300 < x <= 207350 : TAX_SINGLE[163300]+(x-163300)*0.32,
+                   207350 < x <= 518400 : TAX_SINGLE[207350]+(x-207350)*0.35,
+                   x > 518400 : TAX_SINGLE[518400]+(x-518400)*0.37 }
+
+TAX = [x][y] {
+              | f1040.Filing_Status==1 | f1040.Filing_Status==2 or f1040.Filing_Status==5 | f1040.Filing_Status==3 | f1040.Filing_Status==4 |
+ |    true    | TAX_SINGLE[x] | TAX_MARRIED[x] | TAX_SEPARATE[x] | TAX_HEADHOUSE[x] |
+}

@@ -1,0 +1,30 @@
+Interpreter is given ordered list of all files with formulae to use in
+calculating result, as well as one of the following:
+1. A variable whose value to output
+2. An undefined variable whose value should be varied between a given
+   minimum and a given maximum using a given stepping, and another
+   defined variable whose value, or, as specified, the first
+   derivative of its value, should be output in a spreadsheet for each
+   value the varied variable takes on.  Multiple output variables may
+   be given in this case, but only one variable may be varied.
+3. The same as above, except that two undefined variables may be
+   varied and only one output variable may be placed into the
+   spreadsheet.
+
+First pass:
+- Verify that no variable is used in an equation without first being
+  declared (not necessarily defined).
+
+Second pass:
+- Create a forward symbol table by going through the list of
+  declarations and placing all declared-but-not-defined symbols in the
+  table, then filling in their values by executing all
+  post-initialization declarations across all files ("<-").
+
+Third pass:
+- Execute all declarations in order that are not post-initializations.
+
+(If the interpreter is being run in mode 2 or 3, special handling will
+need to be done for the variable or variables that are being varied in
+the second pass, and that special handling plus the third pass will
+need to be executed many times.)

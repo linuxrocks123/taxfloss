@@ -1,0 +1,63 @@
+- Language intended to make it easy to create dialog boxes to help
+  fill out tax forms.
+- Input boxes appear left-to-right; commands for "new line" and "new
+  page" (wizard interface).
+- Language supports lists ("Add"/"Edit"/"Remove" buttons to modify)
+- Language supports radio buttons as demonstrated below.
+- Language supports forwarding the summation of entries in list and
+  length of lists to output file as demonstrated below.
+- Language supports doing calculations in Taxicality language,
+  although this should be discouraged except for lists, where it's
+  necessary.
+- Type words are SLINE, NLINE, CHECK, RADIO, and LIST.
+- There's also TAXICALITY.  In the example, below, the line executed
+  by the interpreter might be:
+  D4_Credit_Amount = D4_Child_Tax_Credit * 1000
+- NLINE and CHECK convert to type NUMBER in Taxicality.
+
+Output:
+- The form is read and it generates a wizard.  After the user finishes
+  the wizard, two output files are generated, one to be input for
+  Taxicality and one to be input for flpsed or whatever.
+- Variables from taxicality are also needed as inputs to flpsed, of
+  course.  Some marshaling will be necessary.
+
+Notes:
+- For the corner case where it's necessary to generate a page of data
+  from whole cloth, like when someone has more than four dependents,
+  a list is used to generate a table.  The whole cloth form must
+  specify which portion of the end of the list should be used to fill
+  in the table, and must specify the names of the variables used
+  inside of the list.
+
+Implementation:
+- No need to make a parser for this; just read it line-by-line and
+  split the line into tokens.
+- When creating an element in the wizard, check any saved data (stored
+  in a symbol table) to see if it should be pre-filled.
+- Fl_Wizard should do nicely.
+
+Example:
+
+Name = Name = SLINE "Your legal name"
+Address = Address = SLINE "Your legal address"
+newline()
+SSN = SSN = SLINE "Your social security number"
+newline()
+RADIO "Select your filing status"
+  {
+    1040.L1 = Single = CHECK "Select if you are single"
+    1040.L2 = Married Filing Jointly = CHECK "Select if you are married filing jointly"
+  }
+newline()
+Deplist = LIST "List of dependents"
+  {
+    D#_Name = Name = SLINE "Enter dependent's name"
+    D#_SSN = SSN = SLINE "Enter dependent's Social Security Number"
+    D#_REL = Relationship = SLINE "Enter dependent's relationship to you"
+    D#_Child_Tax_Credit = Child Tax Credit = CHECK "Does this child qualify for the child tax credit?"
+    D#_Credit_Amount = Hidden Anyway = TAXICALITY "D#_Child_Tax_Credit * 1000"
+  }
+1040.dependents = LEN(Deplist)
+1040.qualifying_children = SUM(Deplist.D#_Child_Tax_Credit)
+newline()

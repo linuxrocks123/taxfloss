@@ -1,0 +1,40 @@
+L1 = f1040.L15
+L2 = f1040.L3a
+L3_work = if(f1040_d.L15 < f1040_d.L16) f1040_d.L15 else f1040_d.L16
+L3 = if(L3_work > 0) L3_work else 0
+L4 = L2 + L3
+L5 = if(L1 - L4 > 0) L1 - L4 else 0
+L6 = if(f1040.Filing_Status==1 or f1040.Filing_Status==3)
+        $40000
+     elif(f1040.Filing_Status==2 or f1040.Filing_Status==5)
+        $80000
+     else
+        assert(f1040.Filing_Status==4)
+        $53600
+L7 = if(L1 < L6) L1 else L6
+L8 = if(L5 < L7) L5 else L7
+L9 = L7 - L8
+L10 = if(L1 < L4) L1 else L4
+L11 = L9
+L12 = L10-L11
+L13 = if(f1040.Filing_Status==1)
+        $441450
+      elif(f1040.Filing_Status==3)
+        $248300
+      elif(f1040.Filing_Status==2 or f1040.Filing_Status==5)
+        $496600
+      else
+        assert(f1040.Filing_Status==4)
+        $469050
+L14 = if(L1 < L13) L1 else L13
+L15 = L5 + L9
+L16 = if(L14 - L15 > 0) L14 - L15 else 0
+L17 = if(L12 < L16) L12 else L16
+L18 = L17*0.15
+L19 = L9 + L17
+L20 = L10 - L19
+L21 = L20 * 0.2
+L22 = TABLES.TAX[L5][-1]
+L23 = L18 + L21 + L22
+L24 = TABLES.TAX[L1][-1]
+L25 = if(L23 < L24) L23 else L24

@@ -1,0 +1,13 @@
+export OSXCROSS_VERSION=0.15
+export OSXCROSS_OSX_VERSION_MIN=10.5
+export OSXCROSS_TARGET=darwin15
+export OSXCROSS_SDK_VERSION=10.11
+export OSXCROSS_SDK=/opt/osxcross/target/bin/../SDK/MacOSX10.11.sdk
+export OSXCROSS_TARBALL_DIR=/opt/osxcross/target/bin/../../tarballs
+export OSXCROSS_PATCH_DIR=/opt/osxcross/target/bin/../../patches
+export OSXCROSS_TARGET_DIR=/opt/osxcross/target/bin/..
+export OSXCROSS_BUILD_DIR=/opt/osxcrosss/build
+export OSXCROSS_CCTOOLS_PATH=/opt/osxcross/target/bin
+export OSXCROSS_LIBLTO_PATH=/opt/osxcross/clang-local/lib
+export OSXCROSS_LINKER_VERSION=274.2
+export PATH=/opt/osxcross/target/bin:$PATH

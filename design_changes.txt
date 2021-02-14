@@ -1,0 +1,20 @@
+Rounding and truncation operator changes:
+\ 0.01
+round to the nearest hundredth
+
+\ 50
+round to the nearest 50
+
+\_ 0.01
+truncate to the greatest hundredth less than or equal to the number
+
+\^ 0.01 round up to the nearest hundredth greater than or equal to the number
+
+Other changes:
+- Allow to set automatic rounding for all variables matching a
+  particular regex (such as, say L[0-9]*)
+
+Possible syntax:
+x of pattern L[0-9]* = x \ 1
+
+(This would round to the nearest whole number in the new syntax.)
