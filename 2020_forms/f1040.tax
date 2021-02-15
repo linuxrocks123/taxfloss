@@ -1,4 +1,4 @@
-Filing_Status := NUMBER
+Filing_Status := NUMBER "1 Single, 2 MFJ, 3 MFS, 4 HoH, 5 QW"
 
 L1 := NUMBER
 L2a := NUMBER
@@ -11,7 +11,7 @@ L5a := NUMBER
 L5b = 0 "N/I"
 L6a := NUMBER "TODO"
 L6b = 0 "N/I"
-L7 = f1040_d.L16
+L7 = f1040_d.L21
 L8 = schedule_1.L9
 L9 = L1 + L2b + L3b + L4b + L5b + L6b + L7 + L8
 Total_Income = L9

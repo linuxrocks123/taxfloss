@@ -6,6 +6,6 @@ L5 = 0 "Social Security and Medicare TODO"
 L6 = 0 "IRA penalty TODO"
 L7a = 0 "Schedule H TODO"
 L7b = 0 "Form 5405 TODO"
-L8 = 0 "Form 8959 / 8960 / others TODO"
+L8 = f8959.L7 + f8960.L17
 L9 = 0 "Form 965-A TODO"
 L10 = L4 + L5 + L6 + L7a + L7b + L8
