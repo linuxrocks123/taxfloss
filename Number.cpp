@@ -28,6 +28,14 @@ Number::Number(std::string str_val)
      StringFunctions::tokenize(split_result,str_val,".");
      if(split_result.size() > 2 || split_result.size() == 0)
           throw std::invalid_argument("Number constructor: invalid string given");
+
+     //Check for overflow
+     int columns = split_result[0].length();
+     if(split_result.size() > 1)
+          columns += split_result[1].length();
+     if(columns > Number::MAX_COLUMNS)
+          throw std::range_error("Number constructor: overflow");
+     
      if(split_result.size()==1)
      {
           value = stol(split_result[0]);
@@ -77,11 +85,21 @@ void Number::round_or_truncate(Number amount, int bias)
      if(amount.value <= 0)
           throw std::invalid_argument("Right argument to rounding and truncation arguments must be positive.");
 
+     //Perform preliminary truncation
+     int8_t preliminary_truncation_amount = amount.get_total_columns() + std::max(right,amount.right) - amount.right - Number::MAX_COLUMNS;
+     if(preliminary_truncation_amount > 0)
+     {
+          
+          value/=pow10(preliminary_truncation_amount);
+          right-=preliminary_truncation_amount;
+     }
+     
      bool i_was_negative = value < 0;
      value = abs(value);
           
      int8_t max_right = std::max(right,amount.right);
      int8_t min_right = std::min(right,amount.right);
+
      for(Number* num : {this,&amount})
      {
           int8_t shift_needed = max_right - num->right;
@@ -169,14 +187,21 @@ Number operator*(const Number& left, const Number& right)
 
 Number operator/(const Number& left, const Number& right)
 {
-     Number to_return{left.value/right.value,left.right-right.right};
-     uint8_t max_precision = Number::MAX_COLUMNS - std::max(left.get_total_columns(),right.get_total_columns());
+     Number new_left = left;
+     int scale_factor = right.get_total_columns() - new_left.get_total_columns();
+     if(scale_factor > 0)
+     {
+          new_left.value*=pow10(scale_factor);
+          new_left.right+=scale_factor;
+     }
+     Number to_return{new_left.value/right.value,new_left.right-right.right};
+     uint8_t max_precision = Number::MAX_COLUMNS - std::max(new_left.get_total_columns(),right.get_total_columns());
      uint64_t divisor = abs(right.value);
-     uint64_t remainder = abs(left.value)%divisor;
+     uint64_t remainder = abs(new_left.value)%divisor;
      remainder*=pow10(max_precision);
      remainder/=divisor;
      to_return.value*=pow10(max_precision);
-     if(left.value > 0 && right.value > 0 || left.value < 0 && right.value < 0)
+     if(new_left.value > 0 && right.value > 0 || new_left.value < 0 && right.value < 0)
           to_return.value+=remainder;
      else
           to_return.value-=remainder;

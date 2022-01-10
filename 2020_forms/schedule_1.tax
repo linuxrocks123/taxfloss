@@ -1,3 +1,5 @@
+NUMBER x of pattern @L[0-9]*[a-z]*@ = x \ 1
+
 L1 := NUMBER
 L2a := NUMBER
 L3 = 0 "Schedule C TODO"

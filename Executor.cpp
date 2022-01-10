@@ -9,6 +9,7 @@
 void Executor::visit(list<Declaration>& root)
 {
      uninitializables.clear();
+     regex_post_modifiers.clear();
      for(auto& decl : root)
      {
           try
@@ -42,6 +43,18 @@ void Executor::visit(Declaration& decl)
           {
                throw "Number error in declaration of "+lhs+": "+e.what();
           }
+
+          //Regex Post-Modifier Processing
+          for(Declaration* post_modifier : regex_post_modifiers)
+               if(retval.type==post_modifier->rhs.regex_data->type && regex_match(decl.identifier,post_modifier->rhs.regex_data->matcher))
+               {
+                    unordered_map<string,Value> local_symtab;
+                    local_symtab[post_modifier->identifier] = retval;
+                    local_symtabs.push(local_symtab);
+                    post_modifier->rhs.regex_data->post_modifier_expression->visit_with(*this);
+                    local_symtabs.pop();
+               }
+          
           get_symbol(lhs) = retval;
      }
      else if(decl.init_status==Declaration::SOLVER_INITIALIZED)
@@ -168,6 +181,8 @@ void Executor::visit(Declaration& decl)
                throw retval;
           }
      }
+     else if(decl.init_status==Declaration::REGEX_POST_MODIFIER)
+          regex_post_modifiers.push_back(&decl);
 
      if(lhs=="assert")
           if(retval.type!=Type::BOOLEAN)
@@ -342,6 +357,18 @@ void Executor::visit(Array_Expression& ae)
      string old_current_file = current_file;
      current_file = ary_file;
 
+     struct Finally
+     {
+          const string& old_current_file;
+          Finally(const string& old_current_file_) :
+               old_current_file(old_current_file_) { }
+          ~Finally()
+               {
+                    local_symtabs.pop();
+                    current_file = old_current_file;
+               }
+     } finally(old_current_file);
+
      int d1 = 0;
      bool found = false;
      for(auto e : ary->row_headers)
@@ -377,9 +404,6 @@ void Executor::visit(Array_Expression& ae)
                throw "Invalid second index in array access in declaration for "+lhs;
           (*ary)(d1,d2)->visit_with(*this);
      }
-     
-     local_symtabs.pop();
-     current_file = old_current_file;
 }
 
 void Executor::visit(Identifier_Expression& ie)

@@ -1,3 +1,5 @@
+NUMBER x of pattern @L[0-9]*[a-z]*@ = x \ 1
+
 PHASEOUT_TABLE = [x] { f1040.Filing_Status==1 or f1040.Filing_Status==4 : $75000,
                        f1040.Filing_Status==2 or f1040.Filing_Status==5 : $124000,
                        f1040.Filing_Status==3 : $10000 }

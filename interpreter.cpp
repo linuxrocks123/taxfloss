@@ -11,7 +11,9 @@ using namespace std;
 
 extern int yydebug;
 extern FILE* yyin;
+extern int current_line;
 extern int yyparse();
+extern vector<string>* error_msgs;
 
 map<string,list<Declaration>*> ast_roots;
 
@@ -35,15 +37,20 @@ string parse_and_check(char** filenames)
 #endif
 
      Symtab_Pass_Visitor gen_syms;
+     error_msgs = &gen_syms.error_msgs;
      string to_return = "";
      while(*filenames)
      {
           yyin = fopen(*filenames,"r");
           current_file = chop_extension(*filenames);
+          current_line = 1;
           int result = yyparse();
           if(result)
           {
-               to_return = string{"Parsing file "}+*filenames+" failed.";
+               if(gen_syms.error_msgs.size())
+                    to_return = gen_syms.error_msgs[0];
+               else
+                    to_return = string("Line ")+to_string(current_line)+": Parsing file "+*filenames+" failed.";
                return to_return;
           }
           

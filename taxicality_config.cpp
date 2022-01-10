@@ -86,8 +86,13 @@ extern "C" int yywrap()
      return 1;
 }
 
-int yyerror(const char* msg)
+vector<string>* error_msgs;
+int yyerror(const char* msg_)
 {
-     cout << msg << endl;
+     string msg = "Line "+to_string(current_line)+": "+msg_;
+     if(error_msgs)
+          error_msgs->push_back(msg);
+     else
+          cout << msg << endl;
      return 0;
 }

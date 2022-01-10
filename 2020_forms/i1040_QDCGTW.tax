@@ -1,3 +1,5 @@
+NUMBER x of pattern @L[0-9]*[a-z]*@ = x \ 1
+
 L1 = f1040.L15
 L2 = f1040.L3a
 L3_work = if(f1040_d.L15 < f1040_d.L16) f1040_d.L15 else f1040_d.L16
@@ -34,7 +36,7 @@ L18 = L17*0.15
 L19 = L9 + L17
 L20 = L10 - L19
 L21 = L20 * 0.2
-L22 = TABLES.TAX[L5][-1]
+L22 = TABLES.TAX[L5]
 L23 = L18 + L21 + L22
-L24 = TABLES.TAX[L1][-1]
+L24 = TABLES.TAX[L1]
 L25 = if(L23 < L24) L23 else L24

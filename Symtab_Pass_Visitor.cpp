@@ -36,6 +36,13 @@ void Symtab_Pass_Visitor::visit(const Declaration& decl)
                uninitialized_vars.erase(lhs);
           get_symbol(lhs) = Value{Type::NONE};
           break;
+     case Declaration::REGEX_POST_MODIFIER:
+          unordered_map<string,Value> local_symtab;
+          local_symtab[decl.identifier];
+          local_symtabs.push(local_symtab);
+          decl.rhs.regex_data->post_modifier_expression->visit_with(*this);
+          local_symtabs.pop();
+          break;
      }
 }
 

@@ -43,4 +43,5 @@ Business Plan
 -------------
 
 Code for Taxicality is open-source and held by foundation.
-Forms are sold by subscription by a corporation.
+Forms for upcoming tax year are sold by subscription by a corporation.
+Forms for current tax year are free.

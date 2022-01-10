@@ -1,2 +1,4 @@
+NUMBER x of pattern @L[0-9]*[a-z]*@ = x \ 1
+
 L13 := NUMBER
 L16 := NUMBER

@@ -1,8 +1,7 @@
 %{
-#include "taxicality_config.hpp"
-#include "taxicality.h"
+#include "tuidl_config.hpp"
+#include "tuidl.h"
 #include "Value.hpp"
-//#include "symtab.hpp"
 
 #include "StringFunctions.h"
 
@@ -19,24 +18,9 @@ fpoint  {integer}+\.{integer}+
 
 %%
 
-%{
-  static int last_herald = 0;
-  if(inject_herald)
-  {
-       last_herald = inject_herald;
-       inject_herald = 0;
-       return last_herald;
-  }
-%}
-
 {ws} { /*no code needed*/ }
 \n { current_line++; }
-;  {
-     if(last_herald==INTERACTIVE_HERALD)
-          return EOF;
-     else
-          REJECT;
-   }
+;  { return EOF; }
 
 if { return IF; }
 elif { return ELIF; }
@@ -50,18 +34,6 @@ false { yylval.value = Value(false);
         return LITERAL;
       }
 
-assert { return ASSERT; }
-ZEROES { return ZEROES; }
-RANGE { return RANGE; }
-DELTA { return DELTA; }
-TOLERANCE { return TOLERANCE; }
-
-of { return OF; }
-pattern { return PATTERN; }
-
-BOOLEAN { return BOOLEAN; }
-NUMBER { return NUMBER; }
-
 {integer}|{fpoint} { string to_convert = StringFunctions::replace(yytext,"$","");
             to_convert = StringFunctions::replace(to_convert,",","");
             yylval.value = Value(Number(to_convert));
@@ -69,9 +41,8 @@ NUMBER { return NUMBER; }
           }
 
  /*Assignment*/
-:=  { return UNINITDEC; }
 =   { return '='; }
-\<- { return INITIALIZE; }
+\+= { return PLUSEQUALS; }
 
  /*Computation*/
 \\ { return '\\'; }
@@ -90,6 +61,15 @@ NUMBER { return NUMBER; }
 \> { return '>'; }
 != { return NOT_EQUALS; }
 
+ /*Keywords*/
+dialog { return DIALOG; }
+for { return FOR; }
+form { return FORM; }
+nonunique { return NONUNIQUE; }
+stub { return STUB; }
+unique { return UNIQUE; }
+
+
  /*Logic*/
 and { return AND; }
 or { return OR; }
@@ -97,13 +77,7 @@ not { return NOT; }
 
  /*Punctuation*/
 \. { return '.'; }
-\,  { return ','; }
-:  { return ':'; }
-\[ { return '['; }
-\] { return ']'; }
-\| { return '|'; }
-\( { return '('; }
-\) { return ')'; }
+:: { return DOUBLECOLON; }
 \{ { return '{'; }
 \} { return '}'; }
 
@@ -111,21 +85,22 @@ not { return NOT; }
        return IDENTIFIER;
      }
 
-@.*@ { string temp = yytext;
-       temp = temp.substr(1,temp.size()-2);
-       yylval.identifier = new string{temp};
-       return REGEX;
-     }
-
-\" { char c = yyinput();
-     while(c!='\"')
-          if(c=='\n' || c=='\0')
+\" { yylval.identifier = new string{};
+     bool last_was_backslash = false;
+     for(char c = yyinput(); !last_was_backslash || c!='\"'; c = yyinput())
+     {
+          if(c=='\n' && !last_was_backslash || c=='\0')
           {
-               yyerror("Lexer: unterminated comment literal.");
+               yyerror("Lexer: unterminated string literal.");
                break;
           }
+          if(c!='\\' || last_was_backslash)
+          {
+               *(yylval.identifer) += c;
+               last_was_backslash = false;
+          }
           else
-               c = yyinput();
+               last_was_backslash = true;
+     }
+     return STRING;
    }
-
-. { yyerror((string{"Illegal character: "}+yytext).c_str()); }

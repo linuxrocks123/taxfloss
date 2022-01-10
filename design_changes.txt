@@ -15,6 +15,417 @@ Other changes:
   particular regex (such as, say L[0-9]*)
 
 Possible syntax:
-x of pattern L[0-9]* = x \ 1
+{typename} x of pattern L[0-9]+[a-z]* = x \ 1
 
 (This would round to the nearest whole number in the new syntax.)
+
+TODO to finish the implementation:
+- Implement a new type of declaration.
+- Change all three visitors to handle new type of declaration.  Will
+  need to use a local symtab for the right-hand Expression.
+- Make sure to make the scope file-local somehow.
+
+TODO (02/17/2021):
+- Need to update Print_Visitor, Symtab_Pass_Visitor, and Executor to
+  deal with new declaration type.
+- Use existing local_symtab implementation for local symtab.
+- Global var something like map<string,set<Declaration*> > interpreted
+  as (filename -> set of REGEX_POST_MODIFIER declarations for file)
+  can be used.
+
+Ideas 02/27:
+------------
+
+- flpsed for PDFs
+- Generate test coverage data from special execution mode
+- Test all branches and also test corner cases like (A==B) when
+  conditional is (A < B).
+
+New language for UI generation:
+------------------------------
+
+UI is hierarchical.  You put the forms you receive in; it spits out
+the filled-in tax forms.
+
+Here's an example of how a W-2 might fit in the hierarchy.
+
+NONUNIQUE FORM Forms Received From Organizations / W-2
+WARNING: Do not report information from a W-2 which you know to be incorrect
+Box 1 "Wages, tips, other comp." "" +f1040.L1
+Box 2 "Federal income tax withheld" "" +f1040.L25a
+Box 3 "Social Security wages "" +f843_excess_fica.SS_WAGES
+Box 4 "Social Security tax withheld" "" +f843_excess_fica.SS_TAX
+Box 5 "Medicare wages and tips" "" +f843_excess_fica.MEDICARE_WAGES
+Box 6 "Medicare tax withheld" "" +f843_excess_fica.MEDICARE_TAX
+Box 7 "Social Security tips" "" +f843_excess_fica.SS_WAGES
+Box 8 "Allocated tips" "" +f4137.TOTAL_UNREPORTED_TIPS
+Box 9 "N/A" "" NULL
+Box 10 "Dependent care benefits" "" +f2441.L12
+Box 11 "Nonqualified plans" NULL
+Box 12 "Various" NULL
+
+Anything that shows up on here must be filled out by the user if the
+user adds a W-2.  The program will keep unanswered questions in a list
+somewhere and will not generate filled-in forms until the user answers
+all the unanswered questions.
+
+Forms that must be submitted to the IRS are included if any variables
+in that form are filled in and if no assert statements in the file
+register false.  Forms that are not included but which are referred to
+by other forms have the referred variables filled in with zero.
+
+IRS forms exist in the hierarchy, too, so that questions may be asked
+of the user in order to fill out the form correctly.  Form 1040 would
+look something like this:
+
+UNIQUE FORM IRS Forms / Form 1040 (f1040)
+Name "Your first name and middle initial" "" STRING:name1
+...
+Line 1 "Are there any wages, salaries, and tips for which you received no W-2 or an incorrect W-2 from the employer?" "URL or something like Contact the IRS first before filing form f4852" BOOLEAN:yes->touches:f4852_ss.L7 (qf1040:Question 1)
+...
+
+FORM IRS Forms / Form 4852 As Replacement W-2 (f4852_ss)
+WARNING: Make every attempt to get a correct W-2 from your employer or from the IRS before filing Form 4852.
+WARNING: You must file a separate Form 4852 for every employer for which you did not receive a correct W-2.
+WARNING: If there are multiple employers who did not give you a W-2, or who gave you an incorrect one, add duplicate copies of this form to your tax project.
+...
+Line 7 "Wages from this employer for which you received no or an incorrect W-2" "help information" +f1040.L1
+...
+
+FORM IRS Forms / Form 4852 As Replacement 1099-R (f4852_1099r)
+...
+
+UNIQUE FORM Interview Questions / Questions About Unreported Income (qf1040)
+Question 1 "Are there any wages, salaries, and tips for which you received no W-2 or an incorrect W-2 from the employer?" "URL or something like Contact the IRS first before filing form f4852" BOOLEAN:yes->touches:f4852_ss.L7
+
+General Idea
+------------
+
+- Use flpsed to create tags with labels for all the forms to fill in.
+- Some of those tags are going to come from running taxicality.
+- Other tags are going to come from the glue language.
+
+- Some forms are unique.  Other forms are not unique.  Taxicality code
+  can only refer to other forms if those forms are unique.  Glue code
+  will deal with nonunique forms by never running taxicality with more
+  than one copy of a nonunique form in the namespace.
+  (Better option: change the name of the nonunique form per copy.)
+
+- Glue code specifies the user interface for the program.  Each
+  segment of glue code specifies a dialog box that may be filled out.
+
+- A glue code segment dialog box can have hidden fields that are
+  pre-filled.
+
+- Dialog boxes are hierarchical.  The place in the hierarchy is
+  specified in the glue code definition of the box.
+
+- All fields of a nonunique IRS form must be filled out in the same
+  dialog box.
+
+- Any taxicality variable referred to in glue code as something like
+  +f1040.L1 defines f1040 as being a unique taxicality form.  Any
+  taxicality variable referred to in glue code as something like
+  =f4852_ss.L7 defines f4852_ss as being nonunique.
+
+- Glue code variables can be strings and can concatenate to strings.
+  These aren't passed on to taxicality but rather to the IRS PDF.
+
+- Each taxicality file refers to at most a single IRS PDF, either
+  unique or not unique.  Glue code must specify a single dialog box
+  that unites the taxicality file with the IRS PDF, even if there's
+  nothing to fill out in that dialog box because all the fields are
+  handled by other dialogs.  This dialog box will have a "generate
+  preview" button.
+- This dialog box's glue code will define the taxicality file and IRS
+  PDF as being unique or nonunique; this will be type-checked against
+  all references to variables in that file or PDF to make sure they
+  match.  (The rule is only unique files' variables can be accessed by
+  any other file.)
+- Glue code for a dialog box can be used to define a taxicality file
+  as hidden and with no real dialog box.  Useful for utility
+  taxicality files that correspond to IRS worksheets or tables.
+- A defined-unique taxicality file can use asserts which will hide its
+  associated dialog box when failing (and will also result in no
+  associated PDF being generated).
+  Edit: don't do this.
+
+- Glue code can prefix fields with a reference to a boolean from the
+  taxicality code.  The field will then be filled in with zero if the
+  boolean is false and the question will only be asked if the field is
+  true.
+- Booleans -- and only booleans -- can be defined in a local undotted
+  namespace unique to the dialog box they are part of.  These booleans
+  can then be used as prefix fields.  No boolean logic may ever be
+  performed on such undotted variables.
+- These prefixed fields can also be used to conditionally fill in a
+  field on a form with text by combining this feature with the hidden
+  text feature.
+- Glue code will have to keep track of which questions have been
+  answered.  Dialogs with some fields that haven't been answered yet
+  will block generation of any PDFs.
+
+- There will be a second type of taxicality assert that gives an error
+  message rather than hides the form.  The text error string should be
+  in a format that allows the glue code to switch to the appropriate
+  dialog box or boxes and print what the taxicality code is saying is
+  wrong with the input.
+  Edit: this will be the only assert type.
+
+Perhaps use JSON for glue language:
+https://github.com/nlohmann/json
+
+Conclusions:
+- There will be an IDE for easily adding tax forms.
+- Look to Pasithea for how to do this.
+- Use flpsed for the "forms" portion of the IDE.  flpsed will need to
+  either be distributed in modified form or compiled into the same
+  executable as the IDE.
+
+Next steps:
+- Work out the details of the JSON regime.
+- Specifically, consider how to deal with strings.  Should they be
+  dealt with through hidden fields in the JSON, as in the current
+  design, or should the taxicality language be extended to deal with
+  them somehow?
+- If the strings are done in JSON, concatenation format for unique
+  forms still probably works fine for it.
+- Users will have to type taxicality code out, but the JSON glue code
+  should be managed with a GUI.
+
+Think deeply about how to share responsibility between glue code and
+JSON.
+
+taxicality needs better error handling for uninitialized variables
+used inside an array.
+It's just a bug that needs to be fixed: you need a finally block after
+you change current_file to ary_file because you might throw out.
+(Now fixed.)
+
+You need to let flpsed fields use dot notation to label fields to deal
+with things like the summation section of Form 1116.
+
+Taxicality has bad behavior when any file has a semicolon in it.  Fix.
+
+Opinions as of 03-13-2021
+-------------------------
+
+- Best option is to have glue code auto-generate a single .tax file
+  with all the necessary things filled in.
+- Glue code should have separate syntaxes for variables that should be
+  forwarded to the .tax file (where they may simply be forwarded to
+  the PDF as-is) and for variables that should be passed directly to
+  the PDF.  Obviously, all strings should be passed on.
+- Glue code dialog values may not be empty, including string values.
+  (Conditionally guarded hidden fields, like any conditionally guarded
+  fields, don't exist if their guarding condition is false, and so are
+  not "empty".)
+- IDE will warn if a tag in a PDF has no references to it in glue code
+  or Tax code, but will not warn if the only reference is from a
+  conditionally guarded glue field.
+
+Opinions as of 03-21-2021
+-------------------------
+
+- Don't use +/= to implicitly deal with uniqueness.  Explicitly
+  declare PDFs and dialogs to be unique or non-unique.  Unique dialogs
+  may only refer to unique PDFs or .tax files, and non-unique dialogs
+  may only refer to a single associated non-unique PDF and .tax file
+  except that they may use + but not = to refer to unique .tax files.
+- Non-unique tax files may only refer to themselves and unique tax
+  files.
+- Unique tax files may not refer to non-unique tax files, but a
+  nonunique dialog box may contain a hidden field that uses + but not
+  = to glue a nonunique tax variable to a unique tax file.  That will
+  show up in the single .tax file with all the dialog variables filled
+  in.
+
+Work on Modeling for 2021
+-------------------------
+
+- Need to support f1116.  Implement as one .tax file per income type
+  and one .tax file for the summation.
+- Need to implement f1040.L19.
+  Note: the COVID relief refundable Child Tax Credit of up to $3600
+  must be taken into account.  There's also the old Chid Tax Credit of
+  $2000 which is still available up to incomes above even $400000 for
+  a married couple.
+  Will need to find phaseouts for all of old CTC, ACTC, and COVID CTC.
+- Need to implement Schedule 8812.
+- Well ... probably just do some custom thing given this year's
+  weirdness.
+- Need to support f8606. (Nah you can fake it out with f1040.L4b)
+- Need to implement f1040.L30, using $1400/person and phaseout at
+  $75k-$80k for singles and $150k-$160k for couples.
+- Need to account for ACA expansion in Form 8962.  Max applicable
+  figure is now 0.085 and there is no 400% limit.  See table in law.
+
+Next steps
+----------
+
+- Wait for reply from flpsed author.  If you don't get one soon, wing
+  it.
+- While waiting, fix the round_or_truncate function.
+  Failing case: 0.000001/12 \ 1
+  Fix by truncating somehow.  (Done.)
+
+Creating the User GUI
+---------------------
+
+- Do this before making the IDE.
+- Tax code files end in .tax.
+- Non-unique tax code files end in _nu.tax.
+- JSON files end in .glue.
+- Forms end in .ps.
+- Non-unique forms end in _nu.ps.
+- Tag files mirror the file names of the forms and end in .tag.
+
+User GUI feature: can look at form and click a field in order to be
+taken to the interview dialog fore that field.
+
+UI is created from the above.  State of filled in or partially filled
+in UI is saved in a single .txt file with the format var = value.
+
+Filled-in UI is used to create a single .tax file with all necessary
+user input variables filled in.
+
+Filled-in UI is also used to create a .txt file with the format var =
+value for all variables filled in by the user glue code or by the glue
+code hidden field system.
+
+Taxicality is run to create a .txt file with the format var = value
+for all variables which have a value in the program's run.
+
+The two .txt output files are merged and used to create .tag files
+that flpsed can use to fill out the paper forms.  Any tags present in
+flpsed but missing from .tag file will retain the default value that
+was entered in flpsed.  If no default value was given, said tag will
+be empty.
+
+JSON Syntax
+-----------
+
+Each JSON file is a single JSON object which describes a single dialog
+box.  A dialog box is made up of input fields and form managers.
+
+The input fields:
+- Have identifiers.  The identifiers:
+  - Must specify filename.value.
+  - By default, are set with <- in the .tax file with everything.
+  - If are of form "filename.value!" are instead set with = in a .tax
+    file named "filename.tax" and block the inclusion of the real
+    filename.tax.  Use automated testing to catch cases where some but
+    not all necessary fake variables are included in said file.
+  - If are of the form "filename.value?" are instead included in the
+    glue.txt file and, if boolean, the glue mask namespace, but are
+    not specified in any .tax file in any way.
+- Can be of one of four types: NUMBER, STRING, BOOLEAN, RADIO
+- Can have a default value.  If there is no default value, the user
+  must fill them out to complete the tax return package.
+- No default value semantics per type:
+  - NUMBER: field is blank; must be filled with some number
+  - STRING: field is blank, and blank strings are not allowed unless
+            the default value is a blank string
+  - BOOLEAN: field blinks between checked and not checked until the
+             user sets it
+  - RADIO: field blinks between all possible radio values until user
+           sets it.  Converted to NUMBER if used in .tax file.
+- Can be hidden or visible.  If hidden, must have a default value.
+- Can be masked by a boolean variable or its negation.  If masked,
+  does not exist, no matter if it has a default value or not.
+
+The form managers:
+- Have an optional boolean variable or negated boolean variable as a
+  mask controlling when the form is included.
+- Specify the name of the .ps file that is the form template.
+- There is a "Generate Preview" button which doesn't exist when the
+  form is masked out.
+
+Automated testing:
+- Tests both branches of all if statements
+- For inequalities, tests the border case in addition to both sides.
+  For example, if(x <= 50) x else 50 would require tests for x < 50,
+  x==50, and x > 50.
+- Tests both sides of every boolean, both Tax and Glue code.
+- A testcase contains a .txt file for the glue code and an output .txt
+  file with the values that should be generated from the final merge.
+
+Next steps as of 05-14-2021
+---------------------------
+
+- flpsed IS NOT REQUIRED.  The IRS forms are fillable PDFs.
+  Use PDFBox or PoDoFo.
+- Business plan: sell subscriptions to forms for upcoming tax year to
+  be used for tax planning.
+
+Next steps as of 08-19-2021
+---------------------------
+
+- pdftk should work instead of PDFBox or PoDoFo.
+
+This is too complicated for JSON.  Instead, use a custom language to
+create the dialog boxes.  This language, if well-designed, may
+abrogate the need for a custom IDE.
+
+Glue language looks like this:
+
+//Example nonunique dialog
+nonunique dialog DZuul for nonunique form f1234_nu
+{
+        //+= used especially with nonunique identifiers
+        //checkbox could also be: number_input, text_input, radio
+        god_status = checkbox("ARE YOU A GOD?")
+        f1040.num_gods += god_status
+        f1234_nu.god_name = if(god_status) text_input("WHAT IS YOUR GOD-NAME?") else "N/A"
+}
+
+//Example unique dialog
+unique dialog DGodTax
+{
+        //visible used with unique.  addable used with nonunique
+        //Both default always visible/always addable.
+        visible = f1040.num_gods > 4
+}
+
+//Example of stubbing a blocked form
+stub form f6660
+{
+        //::activated used with stubs
+        ::activated = not D6660::visible and not D6660_Simplified::visible
+        income = 0
+        L16 = 0
+}
+
+Language Rules:
+- There can be at most one = but as many += as needed for a form
+  variable.
+- There can be multiple stub forms for the same form, but at most one
+  may be activated.
+- Form variables are accessed through a dot.  Unique dialog variables
+  are accessed through ::.  Nonunique dialog variables are also
+  accessed through ::, but only ::addable is accessible.
+- The only variable that can be associated with a stub form, rather
+  than with the form it is stubbing, is "activated".  It must always
+  be prefixed with ::.
+- The only case where form variables don't need to be prefixed is when
+  inside a stub form.  Nonunique dialogs add new nonunique forms, but
+  the prefix still must be used.
+
+Conceptual Rules:
+- All unique form variables are put together in a single .tax file and
+  set with <-.
+- All stub forms are unique forms and are created and have variables
+  set with =.
+- Nonunique forms do not create .tax files.  They only create PDF
+  files.
+- PDF files can have fields that refer to unique form variables via
+  . accesses.  They also can refer to their own form variables without
+  prefix.  This is the case for PDF files associated with both unique
+  and nonunique forms.
+
+Storage Format:
+- var = value
+  One per line
+- . for form variables, :: for dialog variables
+- For nonunique forms and dialogs, form or dialog name is appended
+  with @1, @2, etc. (so prior to the . or ::).

@@ -1,3 +1,5 @@
+NUMBER x of pattern @L[0-9]*[a-z]*@ = x \ 1
+
 L1a := NUMBER
 L1b := NUMBER
 L2 := NUMBER
@@ -11,7 +13,7 @@ L8a := NUMBER
 L8b := NUMBER
 L9 := NUMBER
 L10 := NUMBER
-L11 = 0 "Forms 4797p1/2439/6252/4684/6781/8824 TODO"
+L11 := NUMBER
 L12 := NUMBER
 L13 := NUMBER
 L14 = 0 "Capital Loss Carryover TODO"

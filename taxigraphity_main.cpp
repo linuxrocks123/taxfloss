@@ -67,7 +67,7 @@ int main(int argc, char** argv)
           if(symtab.count(print_symbol))
           {
                Number to_print = (symtab[print_symbol].value.number-old_tax)/delta;
-               to_print.round(3);
+               to_print.round(Number("0.0001"));
                cout << cur_val << ',' << symtab[print_symbol].value.number << ',' << to_print << endl;
           }
           else

@@ -1,3 +1,5 @@
+NUMBER x of pattern @L[0-9]*[a-z]*@ = x \ 1
+
 Filing_Status := NUMBER "1 Single, 2 MFJ, 3 MFS, 4 HoH, 5 QW"
 
 L1 := NUMBER

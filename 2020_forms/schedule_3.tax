@@ -1,3 +1,5 @@
+NUMBER x of pattern @L[0-9]*[a-z]*@ = x \ 1
+
 L1 := NUMBER "Form 1116 TODO"
 L2 = 0 "Form 2441 TODO"
 L3 = 0 "Form 8863 TODO"
@@ -10,5 +12,5 @@ L8 = f8962.NET_CREDIT
 L9 := NUMBER
 L10 := NUMBER
 L11 = 0 "Form 4136 TODO"
-L12 = 0 "Form 2439/8885/etc TODO"
+L12 := NUMBER
 L13 = L8 + L9 + L10 + L11 + L12

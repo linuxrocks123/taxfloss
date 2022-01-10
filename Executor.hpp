@@ -25,4 +25,5 @@ struct Executor : public Expression_Visitor
      };
 
      list<string> uninitializables;
+     list<Declaration*> regex_post_modifiers;
 };

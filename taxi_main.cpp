@@ -12,6 +12,9 @@ using std::queue;
 extern FILE* yyin;
 extern int yydebug;
 
+extern vector<string>* error_msgs;
+extern int current_line;
+
 void yyrestart(FILE* new_file);
 
 int main(int argc, char** argv)
@@ -24,15 +27,24 @@ int main(int argc, char** argv)
      Executor executor;
      while(true)
      {
+          current_line = 1;
           yyrestart(stdin);
           inject_herald = INTERACTIVE_HERALD;
+          vector<string> local_error_msgs;
+          error_msgs = &local_error_msgs;
           int retval = yyparse();
-          if(retval)
+          if(local_error_msgs.size())
+          {
+               cout << "Errors:" << endl;
+               for(const string& error_msg : local_error_msgs)
+                    cout << error_msg << endl;
+               continue;
+          }
+          else if(retval)
           {
                cout << "Parse failed." << endl;
                continue;
           }
-
           #if 0
           gen_syms.visit(*root);
           if(gen_syms.uninitialized_vars.size())
