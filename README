@@ -1,0 +1,10 @@
+Builds with bake: https://github.com/linuxrocks123/bake
+
+Example usage for 2019 (in test_forms):
+
+../taxicality ALL TABLES.tax f1040.tax f1040_d.tax f8880.tax f8889.tax f8962.tax f8995.tax i1040_QDCGTW.tax p590.tax schedule_1.tax schedule_2.tax schedule_3.tax my_2019_1040.tax | sort
+
+This won't work unless you make the required my_2019_1040.tax file with your personal financial data.
+
+All those .tax files are the "source files" for the IRS tax forms.
+
