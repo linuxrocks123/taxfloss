@@ -1,0 +1,27 @@
+L1 := BOOLEAN
+L2 := BOOLEAN
+L3 := BOOLEAN
+L4 := BOOLEAN
+L5 := BOOLEAN
+L6 = if(L1 or not L2 and f1040.Filing_Status!=2)
+         0
+     elif(f1040.Filing_Status==1 or f1040.Filing_Status==3 or f1040.Filing_Status==5)
+         $1400
+     elif (f1040.Filing_Status==2 and (L2 or L3))
+         $2800
+     elif (f1040.Filing_Status==2 and L4)
+         $1400
+     else
+         assert(false)
+         0
+L7 = $1400 * (f1040.Qualifying_Children_Below_6 + f1040.Qualifying_Children_Above_6)
+L8 = L6 + L7
+L9 = f1040.L11
+L10 = math.max[(if(f1040.Filing_Status==1 or f1040.Filing_Status==3) $80000 elif(f1040.Filing_Status==2 or f1040.Filing_Status==5) $160000 else assert(f1040.Filing_Status==4) $120000) - L9][0]
+L11 = math.min[L10/(if(f1040.Filing_Status==1 or f1040.Filing_Status==3) $5000 elif(f1040.Filing_Status==2 or f1040.Filing_Status==5) $10000 else assert(f1040.Filing_Status==4) $7500) \ 0.01][1]
+L12 = L8 * L11
+
+EIP_3 := NUMBER
+
+L13 = EIP_3
+L14 = math.max[L12 - L13][0]

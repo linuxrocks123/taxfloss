@@ -1,0 +1,16 @@
+ALL_SOURCE_LOSSES := NUMBER
+L3b := NUMBER "Other deductions not standard deduction"
+
+L18 = f1116_WQDCG.L12
+L20 = f1040.L16 + schedule_2.L2
+L25 = f1116_951a.L24
+L26 = f1116_fb.L24
+L27 = f1116_passive.L24
+L28 = f1116_general.L24
+L29 = f1116_901j.L24
+L30 = f1116_treaty.L24
+L31 = f1116_lump.L24
+L32 = L25 + L26 + L27 + L28 + L29 + L30 + L31
+L33 = if(L20 < L32) L20 else L32
+L34 = 0 "N/I"
+L35 = L33 - L34

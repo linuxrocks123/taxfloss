@@ -1,0 +1,41 @@
+PHASEOUT_TABLE = [x] { f1040.Filing_Status==1 or f1040.Filing_Status==4 : $76000,
+                       f1040.Filing_Status==2 or f1040.Filing_Status==5 : $125000,
+                       f1040.Filing_Status==3 : $10000 }
+
+Employer_Plan := BOOLEAN
+Spouse_Employer_Plan := BOOLEAN
+Traditional_Contribution := NUMBER
+Spouse_Traditional_Contribution := NUMBER
+MAGI = f1040.Total_Income - (schedule_1.L11 + schedule_1.L12 + schedule_1.L13 + schedule_1.L14 + schedule_1.L15 + schedule_1.L16 + schedule_1.L17 + schedule_1.L18 + schedule_1.L19a)
+
+PERCENT_TABLE = [x] { Employer_Plan and (f1040.Filing_Status==2 or f1040.Filing_Status==5) : 0.3,
+                      Employer_Plan or Spouse_Employer_Plan : 0.6,
+                      true : 1.0 }
+
+L1 = PHASEOUT_TABLE[-1]
+L2 = MAGI
+L3 = if(L1 > L2) L1 - L2 else 0
+L4 = L3*PERCENT_TABLE[-1]
+L5 = f1040.L1 - schedule_1.L15 - schedule_1.L16
+L6 = Traditional_Contribution
+ALLOWED_DEDUCTION_self = if(L6 <= L5 and L6 <= L4) L6
+                         elif(L5 <= L6 and L5 <= L4) L5
+                         else L4
+
+S_PERCENT_TABLE = [x] { Spouse_Employer_Plan and (f1040.Filing_Status==2 or f1040.Filing_Status==5) : 0.3,
+                        Spouse_Employer_Plan or Employer_Plan : 0.6,
+                        true : 1.0 }
+
+S_L1 = PHASEOUT_TABLE[-1]
+S_L2 = MAGI
+S_L3 = if(S_L1 > S_L2) S_L1 - S_L2 else 0
+S_L4 = S_L3*PERCENT_TABLE[-1]
+S_L5 = f1040.L1 - schedule_1.L15 - schedule_1.L16
+S_L6 = Spouse_Traditional_Contribution
+ALLOWED_DEDUCTION_spouse = if(S_L6 <= S_L5 and S_L6 <= S_L4) S_L6
+                         elif(S_L5 <= S_L6 and S_L5 <= S_L4) S_L5
+                         else S_L4
+
+ALLOWED_DEDUCTION = ALLOWED_DEDUCTION_self + ALLOWED_DEDUCTION_spouse
+
+assert(L5 + S_L5 >= Traditional_Contribution + Spouse_Traditional_Contribution)

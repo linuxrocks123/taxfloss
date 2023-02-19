@@ -1,0 +1,14 @@
+L1 = f1116.L35
+L2 = 0 "Form 2441 TODO"
+L3 = 0 "Form 8863 TODO"
+L4 = f8880.CREDIT_AMOUNT
+L5 = 0 "Form 5695 TODO"
+L7 = 0 "Form 3800 / 8801 / etc TODO"
+L8 = L1 + L2 + L3 + L4 + L5 + L7
+
+L9 = f8962.NET_CREDIT
+L10 := NUMBER
+L11 := NUMBER
+L12 = 0 "Form 4136 TODO"
+L14 = 0 "Form 2439/8885/etc TODO"
+L15 = L9 + L10 + L11 + L12 + L14

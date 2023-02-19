@@ -1,0 +1,57 @@
+APPLICABLE_FIGURE = [x] { "TODO Update This"
+x < 150 : 0,
+150 <= x and x < 300 : 0 + 0.0004*(x-150),
+300 <= x <= 400 : 0.06 + 0.00025*(x-300),
+401 : 0.085 }
+
+L1 := NUMBER
+
+work_L1 = f1040.AGI
+work_L2 = f1040.L2a
+work_L3 = 0 "TODO"
+work_L4 = if(f1040.L6a > f1040.L6b) f1040.L6a - f1040.L6b else 0
+work_L5 = work_L1 + work_L2 + work_L3 + work_L4
+
+L2a = work_L5
+L2b = 0 "TODO"
+L3 = L2a + L2b
+
+FPL_TABLE = [x] { x : $12760 + $4480 * (x - 1) }
+
+L4 = FPL_TABLE[L1]
+
+L5 = if(L3 > L4*4) 401 else ((L3/L4)*100 \_ 1)
+
+L7 = APPLICABLE_FIGURE[L5]
+L8a = L3*L7 \ 1
+L8b = L8a/12 \ 1
+
+MONTHS := NUMBER
+L1223a := NUMBER
+L1223b := NUMBER
+L1223f := NUMBER
+
+L11a = L1223a*MONTHS
+L11b = L1223b*MONTHS
+L11c = L8b*MONTHS
+L11d = if(L11b - L11c > 0) L11b - L11c else 0
+L11e = if(L11a < L11d) L11a else L11d
+L11f = L1223f*MONTHS
+
+L24 = L11e
+L25 = L11f
+L26 = if(L24 - L25 > 0) L24 - L25 else 0
+NET_CREDIT = L26
+
+L27 = if(L25 - L24 > 0) L25 - L24 else 0
+
+REPAYMENT_LIMITATION_TABLE = [x][y] { 
+                 | f1040.L1==1 | true |
+| x < 200        | 325 | 650 |
+| 200 <= x < 300 | 800 | 1600 |
+| 300 <= x < 400 | 1350 | 2700 |
+| x >= 400       | L27 | L27 | }
+
+L28 = REPAYMENT_LIMITATION_TABLE[L5][-1]
+L29 = if(L27 < L28) L27 else L28
+EXCESS_REPAYMENT = L29

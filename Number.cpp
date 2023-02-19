@@ -49,7 +49,7 @@ Number::Number(std::string str_val)
           value = stol(split_result[0]);
           right = split_result[1].size();
           value*=pow10(right);
-          if(value >= 0)
+          if(value > 0 || value==0 && split_result[0][0]!='-')
                value+=stol(split_result[1]);
           else
                value-=stol(split_result[1]);
@@ -196,6 +196,8 @@ Number operator/(const Number& left, const Number& right)
      }
      Number to_return{new_left.value/right.value,new_left.right-right.right};
      uint8_t max_precision = Number::MAX_COLUMNS - std::max(new_left.get_total_columns(),right.get_total_columns());
+     if(!max_precision)
+          throw std::range_error("Number operator/: Try rounding more.");
      uint64_t divisor = abs(right.value);
      uint64_t remainder = abs(new_left.value)%divisor;
      remainder*=pow10(max_precision);

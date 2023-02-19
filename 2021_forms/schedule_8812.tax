@@ -1,0 +1,110 @@
+L1 = f1040.L11
+L2a := NUMBER
+L2b = 0 "Form 2555 TODO"
+L2c = 0 "Form 4563 TODO"
+L2d = L2a + L2b + L2c
+L3 = L1 + L2d
+L4a = f1040.Qualifying_Children_Below_6 + f1040.Qualifying_Children_Above_6
+L4b = f1040.Qualifying_Children_Below_6
+L4c = L4a - L4b
+
+"Line 5 Worksheet"
+
+L5w_1 = L4b * $3600
+L5w_2 = L4c * $3000
+L5w_3 = L5w_1 + L5w_2
+L5w_4 = L4a * $2000
+L5w_5 = L5w_3 - L5w_4
+L5w_6 = if(f1040.Filing_Status==2) $12500 elif(f1040.Filing_Status==5) $2500 elif(f1040.Filing_Status==4) $4375 else $6250
+L5w_7 = math.min[L5w_5][L5w_6]
+L5w_8 = if(f1040.Filing_Status==2 or f1040.Filing_Status==5) $150000 elif(f1040.Filing_Status==4) $112500 else $75000
+L5w_9 = math.max[L3 - L5w_8][0] \^ 1000
+L5w_10 = L5w_9 * 0.05
+L5w_11 = math.min[L5w_7][L5w_10]
+L5w_12 = L5w_3 - L5w_11
+
+"Back to the main form"
+
+L5 = L5w_12
+L6 := NUMBER
+L7 = L6 * $500
+L8 = L5 + L7
+L9 = if(f1040.Filing_Status==2) $400000 else $200000
+L10 = math.max[L3 - L9][0] \^ 1000
+L11 = L10 * 0.05
+L12 = math.max[L8 - L11][0]
+L13a := BOOLEAN
+L13b := BOOLEAN
+BOX_CHECKED = L13a or L13b
+
+LETTER_6419 := NUMBER
+LETTER_6419_NUM_CHILDREN := NUMBER
+
+"Credit Limit Worksheet A"
+
+CLWA_L1 = f1040.L18
+CLWA_L2 = schedule_3.L1 + schedule_3.L2 + schedule_3.L3 + schedule_3.L4
+CLWA_L3 = CLWA_L1 - CLWA_L2
+CLWA_L4 = 0 "Credit Limit Worksheet B TODO"
+CLWA_L5 = CLWA_L3 - CLWA_L4
+
+"Part I-B"
+
+L14a = if(not BOX_CHECKED) 0 else math.min[L7][L12]
+L14b = if(not BOX_CHECKED) 0 else L12 - L14a
+L14c = if(not BOX_CHECKED) 0 else (if(L14a==0) 0 else 0)
+L14d = if(not BOX_CHECKED) 0 else math.min[L14a][L14c]
+L14e = if(not BOX_CHECKED) 0 else L14b + L14d
+L14f = if(not BOX_CHECKED) 0 else LETTER_6419
+L14g = if(not BOX_CHECKED) 0 else L14e - L14f
+L14h = if(not BOX_CHECKED) 0 else math.min[L14d][L14g]
+L14i = if(not BOX_CHECKED) 0 else L14g - L14h
+
+"Part I-C"
+
+L15a = if(BOX_CHECKED) 0 else CLWA_L5
+L15b = if(BOX_CHECKED) 0 else math.min[L12][L15a]
+L15c = if(BOX_CHECKED) 0 else L27
+L15d = if(BOX_CHECKED) 0 else L15b + L15c
+L15e = if(BOX_CHECKED) 0 else LETTER_6419
+L15f = if(BOX_CHECKED) 0 else L15d - L15e
+L15g = if(BOX_CHECKED) 0 else math.min[L15b][L15f]
+L15h = if(BOX_CHECKED) 0 else L15f - L15g
+
+"Part II"
+
+L16a = if(BOX_CHECKED) 0 else L12 - L15b
+L16b = if(BOX_CHECKED) 0 else L4a * $1400
+L17 = if(BOX_CHECKED) 0 else math.min[L16a][L16b]
+L18a = if(BOX_CHECKED) 0 else f1040.L1 "FIXME"
+L18b = if(BOX_CHECKED) 0 else 0 "FIXME"
+L19 = if(BOX_CHECKED) 0 else (if(L18a > $2500) 0 else $2500 - L18a)
+L20 = L19 * 0.15
+L21 := NUMBER
+L22 = schedule_1.L15 + schedule_2.L5 + schedule_2.L6 + schedule_2.L13
+L23 = L21 + L22
+L24 = f1040.L27a + schedule_3.L11
+L25 = L23 - L24
+L26 = math.max[L20][L25]
+
+L27 = if(L16b < $4200 and L20==0) 0 elif (L16b < $4200) math.min[L17][L20] elif (L20 >= L17) L17 else math.min[L17][L26]
+
+"Part III"
+
+L28a = if(BOX_CHECKED) L14f else L15e
+L28b = if(BOX_CHECKED) L14e else L15d
+L29 = L28a - L28b
+L30 = LETTER_6419_NUM_CHILDREN
+L31 = math.min[L4a][L30]
+L32 = L30 - L31
+L33 = if(f1040.Filing_Status==2 or f1040.Filing_Status==5) $60000 elif(f1040.Filing_Status==4) $50000 else $40000
+L34 = L3 - L33
+L35 = L33
+L36 = L34/L35 \ 0.001
+L37 = L32 * $2000
+L38 = L36 * L37
+L39 = L37 - L38
+L40 = math.max[L29 - L39][0]
+
+NONREFUNDABLE_CREDIT = if(BOX_CHECKED) L14h else L15g
+REFUNDABLE_CREDIT = if(BOX_CHECKED) L14i else L15h

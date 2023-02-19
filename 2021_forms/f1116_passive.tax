@@ -1,0 +1,33 @@
+L1a := NUMBER "Gross Foreign Income of this type"
+L1b = false "N/I"
+L2 := NUMBER "Deductions on this particular income"
+L3a = f1040.L12c
+L3b = f1116.L3b
+L3c = L3a + L3b
+L3d = L1a "Form 2555 TODO"
+L3e = f1040.Total_Income + f1116.ALL_SOURCE_LOSSES
+L3f = L3d/L3e \_ 0.0001
+L3g = L3c * L3f
+L4a = 0 "N/I"
+L4b = 0 "N/I"
+L5 := NUMBER "Foreign source losses for this category"
+L6 = L2 + L3g + L4a + L4b + L5
+L7 = L1a - L6
+L8 := NUMBER "Foreign taxes paid or accrued on income in this category"
+
+L9 = L8
+L10 := NUMBER "carryover from previous years"
+L11 = L9 + L10
+L12 = 0 "N/I, always zero or negative when implemented"
+L13 = 0 "N/I"
+L14 = L11 + L12 + L13
+L15 = L7
+L16 = 0 "N/I"
+L17 = L15 + L16
+L19_work = if(f1116.L18!=0) L17/f1116.L18 \ 0.0001 else 0
+L19 = if(L19_work > 1) 1 else L19_work
+L21 = f1116.L20 * L19
+L22 = 0 "N/I"
+L23 = L21 + L22
+L24 = if(L14 < L23) L14 else L23
+CARRYOVER = L24 - L14 + (f1116.L33 - f1116.L32) * (L24 / f1116.L32 \ 0.01)
