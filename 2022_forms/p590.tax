@@ -1,0 +1,56 @@
+PHASEOUT_TABLE = [Get_Spouse_Value] { (f1040.Filing_Status==1 or f1040.Filing_Status==4) and Get_Spouse_Value==0 : $78,000,
+                                      (f1040.Filing_Status==2 or f1040.Filing_Status==5) and Get_Spouse_Value==0 : $129,000,
+                                      f1040.Filing_Status==3 : $10,000,
+                                      f1040.Filing_Status==2 : $214,000}
+
+Employer_Plan := BOOLEAN
+Spouse_Employer_Plan := BOOLEAN
+Traditional_Contribution := NUMBER
+Spouse_Traditional_Contribution := NUMBER
+MAGI = f1040.Total_Income - (schedule_1.L11 + schedule_1.L12 + schedule_1.L13 + schedule_1.L14 + schedule_1.L15 + schedule_1.L16 + schedule_1.L17 + schedule_1.L18 + schedule_1.L19a)
+
+PERCENT_TABLE = [Get_Spouse_Value] { (Employer_Plan and Get_Spouse_Value==0 or Spouse_Employer_Plan and Get_Spouse_Value==1) and (f1040.Filing_Status==2 or f1040.Filing_Status==5) : 0.3,
+                      Employer_Plan or Spouse_Employer_Plan : 0.6,
+                      true : 1.0 }
+
+L1 = PHASEOUT_TABLE[0]
+L2 = MAGI
+L3 = if(L1 > L2) L1 - L2 else 0
+L4 = L3*PERCENT_TABLE[0] \^ $10
+L5 = f1040.L1a - schedule_1.L15 - schedule_1.L16
+L6 = Traditional_Contribution
+ALLOWED_DEDUCTION_self = if(L6 <= L5 and L6 <= L4) L6
+                         elif(L5 <= L6 and L5 <= L4) L5
+                         else L4
+
+S_L1 = PHASEOUT_TABLE[1]
+S_L2 = MAGI
+S_L3 = if(S_L1 > S_L2) S_L1 - S_L2 else 0
+S_L4 = S_L3*PERCENT_TABLE[1] \^ $10
+S_L5 = f1040.L1a - schedule_1.L15 - schedule_1.L16
+S_L6 = Spouse_Traditional_Contribution
+ALLOWED_DEDUCTION_spouse = if(S_L6 <= S_L5 and S_L6 <= S_L4) S_L6
+                         elif(S_L5 <= S_L6 and S_L5 <= S_L4) S_L5
+                         else S_L4
+
+ALLOWED_DEDUCTION = ALLOWED_DEDUCTION_self + ALLOWED_DEDUCTION_spouse
+
+assert(L5 + S_L5 >= Traditional_Contribution + Spouse_Traditional_Contribution)
+
+Roth_L1 = MAGI
+Roth_L2 = if(f1040.Filing_Status==2 or f1040.Filing_Status==5) $204,000 elif(f1040.Filing_Status==3) $0 else $129,000
+Roth_L3 = Roth_L1 - Roth_L2
+Roth_L4 = if(f1040.Filing_Status==2 or f1040.Filing_Status==3 or f1040.Filing_Status==5) $10,000 else $15,000
+Roth_L5 = math.min[Roth_L3/Roth_L4 \ 0.001][1]
+Roth_L6 = math.min[$6,000][L5]
+Roth_L7 = Roth_L5*Roth_L6
+Roth_L8 = math.max[Roth_L6 - Roth_L7][$200] \^ $10
+Roth_L9 = Traditional_Contribution
+Roth_L10 = Roth_L6 - Roth_L9
+Roth_L11 = math.min[Roth_L8][Roth_L10]
+ALLOWED_ROTH_CONTRIBUTION = Roth_L11
+
+S_Roth_L9 = Spouse_Traditional_Contribution
+S_Roth_L10 = Roth_L6 - S_Roth_L9
+S_Roth_L11 = math.min[Roth_L8][S_Roth_L10]
+ALLOWED_SPOUSE_ROTH_CONTRIBUTION = S_Roth_L11

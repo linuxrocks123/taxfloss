@@ -109,3 +109,37 @@ Update 08-24-2018:
           54.252 \ 1 == 54.3
           54.25 \ 0 == 54
           54.25 \ -1 == 50
+
+---
+
+Update 04-29-2022:
+
+Most of this is obsolete now, but PDF fields can be associated with variables
+by opening the PDF and filling out each field with the associated variable name.
+
+For instance, "f1040.L1".
+
+Nonunique forms can be handled with stuff like "f1116_general[i].L1".
+
+---
+
+Update 05-29-2022:
+
+The UI should be able to be expanded to print the reason a particular
+field is filled in the way it is.  For instance, f1040.L1 should be
+able to be expanded to print the income from each W-2 in the UI.  (It
+is expected that f1040.L1 will be implemented as a sum of summations
+of nonunique forms.)
+
+---
+
+Update 02-18-2023:
+- Require commas in large numbers in the correct positions.  So:
+  $5543.78 is wrong
+  $5,543.78 is right
+  $55,43.78 is wrong
+- Consider adding dimensional analysis to language.  Possible dimensions:
+  $ for US Dollar
+  CAD$ or similar for foreign currency
+  undimensioned for simple scalars
+  $$ for a poison value.  A value of this dimension may not be used in any mathematical operation.

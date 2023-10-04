@@ -12,9 +12,9 @@ int yyerror(const char* e_str);
 delim   [ \t]
 ws      {delim}+
 letter  [A-Za-z_]
-digit   [0-9$]
+digit   [0-9]
 id      {letter}({letter}|{digit})*
-integer {digit}+
+integer (\$?{digit}+)|(\$?{digit}{digit}?{digit}?(\,{digit}{digit}{digit})+)
 fpoint  {integer}+\.{integer}+
 
 %%
@@ -129,3 +129,10 @@ not { return NOT; }
    }
 
 . { yyerror((string{"Illegal character: "}+yytext).c_str()); }
+
+<<EOF>>  {
+     if(last_herald==INTERACTIVE_HERALD)
+          exit(0);
+     else
+          return EOF;
+   }

@@ -1,0 +1,27 @@
+TAX_SINGLE = [x] { 0 <= x <= 10275 : x*0.1,
+                   10275 < x <= 41775 : TAX_SINGLE[10275]+(x-10275)*0.12,
+                   41775 < x <= 89075 : TAX_SINGLE[41775]+(x-41775)*0.22,
+                   89075 < x <= 170050 : TAX_SINGLE[89075]+(x-89075)*0.24,
+                   170050 < x <= 215950 : TAX_SINGLE[170050]+(x-170050)*0.32,
+                   215950 < x <= 539900 : TAX_SINGLE[215950]+(x-215950)*0.35,
+                   x > 539900 : TAX_SINGLE[539900]+(x-539900)*0.37 }
+
+TAX_MARRIED = [x] { 0 <= x <= 20550 : x*0.1,
+                   20550 < x <= 83550 : TAX_MARRIED[20550]+(x-20550)*0.12,
+                   83550 < x <= 178150 : TAX_MARRIED[83550]+(x-83550)*0.22,
+                   178150 < x <= 340100 : TAX_MARRIED[178150]+(x-178150)*0.24,
+                   340100 < x <= 431900 : TAX_MARRIED[340100]+(x-340100)*0.32,
+                   431900 < x <= 647850 : TAX_MARRIED[431900]+(x-431900)*0.35,
+                   x > 647850 : TAX_MARRIED[647850]+(x-647850)*0.37 }
+
+TAX_internal = [x][y] {
+              | f1040.Filing_Status==1 | f1040.Filing_Status==2 or f1040.Filing_Status==5 | f1040.Filing_Status==3 | f1040.Filing_Status==4 |
+ |    true    | TAX_SINGLE[x] | TAX_MARRIED[x] | TAX_SEPARATE[x] | TAX_HEADHOUSE[x] |
+}
+
+TAX = [x] { 0 <= x < 5 : (TAX_internal[x \_ 5][-1] + TAX_internal[(x + 5) \_ 5][-1])*0.5 \ 1,
+            5 <= x < 15 : (TAX_internal[5][-1] + TAX_internal[15][-1])*0.5 \ 1,
+            15 <= x < 25 : (TAX_internal[15][-1] + TAX_internal[25][-1])*0.5 \ 1,
+            25 <= x < 3000 : (TAX_internal[x \_ 25][-1] + TAX_internal[(x + 25) \_ 25][-1])*0.5 \ 1,
+            3000 <= x < 100000 : (TAX_internal[x \_ 50][-1] + TAX_internal[(x + 50) \_ 50][-1])*0.5 \ 1,
+            x >= 100000 : TAX_internal[x][-1] }

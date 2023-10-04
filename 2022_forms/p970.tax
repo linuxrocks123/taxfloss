@@ -1,0 +1,10 @@
+L1 = $2,000
+L2 = f1040.AGI "FIXME"
+L3 = if(f1040.Filing_Status==2) $190,000 else $95,000
+L4 = L2 - L3
+L5 = if(f1040.Filing_Status==2) $30,000 else $15,000
+L6 = L4/L5 \ 0.001
+L7 = L1 * L6
+L8 = L1 - L7
+
+COVERDELL_CONTRIBUTION_LIMIT = math.max[L8][0]

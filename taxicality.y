@@ -40,8 +40,7 @@ extern list<Declaration>* root;
 %left '<' LT_EQUALS GT_EQUALS '>'
 %precedence TERNARY_LT_RULE
 %left '+' '-'
-%left '\\' TRUNCATE ROUNDUP
-%left '*' '/'
+%left '*' '/' '\\' TRUNCATE ROUNDUP
 %right NOT UMINUS_RULE
 %precedence IDENTIFIER
 %precedence '.'

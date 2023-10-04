@@ -1,0 +1,29 @@
+"This is very incomplete."
+
+L1a = math.max[f1040_e.L21][0]
+L1b = math.min[f1040_e.L21][0]
+L1c := NUMBER
+assert(L1c <= 0)
+L1d = L1a + L1b + L1c
+
+L2a := NUMBER
+L2b := NUMBER
+assert(L2b <= 0)
+L2c := NUMBER
+assert(L2c <= 0)
+L2d = L2a + L2b + L2c
+
+L3 = L1d + L2d
+
+L4 = math.max[-math.max[L1d][L3]][0]
+L5 = if(f1040.Filing_Status==3) $75,000 else $150,000
+L6 = f1040.L1z + f1040.L2b + f1040.L3b + f1040.L4b + f1040.L5b + f1040.L6b + f1040.L7 + schedule_1.L1 + schedule_1.L2a + schedule_1.L3 + schedule_1.L4 + schedule_1.L6 + schedule_1.L7 + schedule_1.L9
+L7 = math.max[L5 - L6][0]
+L8 = math.min[L7 * 0.5][if(f1040.Filing_Status==3) $12,500 else $25,000]
+L9 = math.min[L4][L8]
+L10 = L1a + L2a
+L11 = L9 + L10
+
+TOTAL_LOSSES = L1b + L1c + L2b + L2c
+ALLOWED_LOSSES = if(L3 <= 0) -L11 else TOTAL_LOSSES
+DISALLOWED_LOSSES = TOTAL_LOSSES - ALLOWED_LOSSES

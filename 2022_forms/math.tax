@@ -1,0 +1,9 @@
+min = [x][y] {   
+              | x < y | x >= y |
+|   true      |   x   |    y   | }
+
+max = [x][y] {   
+              | x < y | x >= y |
+|   true      |   y   |    x   | }
+
+even = [x] { true : x/2\_1==x/2\^1 }

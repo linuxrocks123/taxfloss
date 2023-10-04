@@ -48,7 +48,11 @@ string parse_and_check(char** filenames)
           if(result)
           {
                if(gen_syms.error_msgs.size())
-                    to_return = gen_syms.error_msgs[0];
+               {
+                    for(string error_msg : gen_syms.error_msgs)
+                         to_return += error_msg + '\n';
+                    to_return.resize(to_return.size()-1);
+               }
                else
                     to_return = string("Line ")+to_string(current_line)+": Parsing file "+*filenames+" failed.";
                return to_return;

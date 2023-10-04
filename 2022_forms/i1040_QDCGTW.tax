@@ -1,0 +1,39 @@
+L1 = f1040.L15
+L2 = f1040.L3a
+L3 = math.max[math.min[f1040_d.L15][f1040_d.L16]][0]
+L4 = L2 + L3
+L5 = math.max[L1 - L4][0]
+L6 = if(f1040.Filing_Status==1 or f1040.Filing_Status==3)
+        $41,675
+     elif(f1040.Filing_Status==2 or f1040.Filing_Status==5)
+        $83,350
+     else
+        assert(f1040.Filing_Status==4)
+        $55,800
+L7 = math.min[L1][L6]
+L8 = math.min[L5][L7]
+L9 = L7 - L8
+L10 = math.min[L1][L4]
+L11 = L9
+L12 = L10-L11
+L13 = if(f1040.Filing_Status==1)
+        $459,750
+      elif(f1040.Filing_Status==3)
+        $258,600
+      elif(f1040.Filing_Status==2 or f1040.Filing_Status==5)
+        $517,200
+      else
+        assert(f1040.Filing_Status==4)
+        $488,500
+L14 = math.min[L1][L13]
+L15 = L5 + L9
+L16 = math.max[L14 - L15][0]
+L17 = math.min[L12][L16]
+L18 = L17*0.15 \ 0.01
+L19 = L9 + L17
+L20 = L10 - L19
+L21 = L20 * 0.2 \ 0.01
+L22 = TABLES.TAX[L5] \ 0.01
+L23 = L18 + L21 + L22
+L24 = TABLES.TAX[L1]
+L25 = math.min[L23][L24]

@@ -1,0 +1,7 @@
+L1 := NUMBER "W-2 Box 5"
+L2 = 0 "Form 4137 TODO"
+L3 = 0 "Form 8919 TODO"
+L4 = L1 + L2 + L3
+L5 = if(f1040.Filing_Status==2) $250000 elif(f1040.Filing_Status==3) $125000 else $200000
+L6 = if(L4 - L5 > 0) L4 - L5 else 0
+L7 = L6*0.009 \ 0.01

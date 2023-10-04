@@ -1,0 +1,27 @@
+L1 := NUMBER
+L2a := NUMBER
+L3 = 0 "Schedule C TODO"
+L4 = 0 "Form 4797 TODO"
+L5 = f1040_e.NET_INCOME
+L6 = 0 "Schedule F TODO"
+L7 := NUMBER
+L8f = f8889.L16
+L8z := NUMBER
+L9 = L8f + L8z
+L10 = L1 + L2a + L3 + L4 + L5 + L6 + L7 + L9
+
+L11 := NUMBER
+L12 = 0 "Form 2106 TODO"
+L13 = f8889.L13
+L14 = 0 "Form 3903 TODO"
+L15 = 0 "Schedule SE TODO"
+L16 := NUMBER
+L17 := NUMBER
+L18 := NUMBER
+L19a := NUMBER
+L20 = p590.ALLOWED_DEDUCTION
+L21 := NUMBER
+L23 = 0 "Archer MSA deduction TODO"
+L24 = 0 "Other adjustments TODO"
+L25 = L24
+L26 = L11 + L12 + L13 + L14 + L15 + L16 + L17 + L18 + L19a + L20 + L21 + L23 + L25

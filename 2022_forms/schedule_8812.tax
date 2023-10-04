@@ -1,0 +1,43 @@
+L1 = f1040.L11
+L2a := NUMBER
+L2b = 0 "Form 2555 TODO"
+L2c = 0 "Form 4563 TODO"
+L2d = L2a + L2b + L2c
+L3 = L1 + L2d
+L4 := NUMBER
+L5 = L4 * $2,000
+L6 := NUMBER
+L7 = L6 * $500
+L8 = L5 + L7
+L9 = if(f1040.Filing_Status==2) $400,000 else $200,000
+L10 = math.max[L3 - L9][0] \^ $1,000
+L11 = L10 * 0.05
+L12 = math.max[L8 - L11][0]
+L13 = CLWA_L5
+L14 = math.min[L12][L13]
+
+NONREFUNDABLE_CREDIT = L14
+
+"Credit Limit Worksheet A"
+
+CLWA_L1 = f1040.L18
+CLWA_L2 = schedule_3.L1 + schedule_3.L2 + schedule_3.L3 + schedule_3.L4 + schedule_3.L6d + schedule_3.L6e + schedule_3.L6f + schedule_3.L6l "+ f5695.L30"
+CLWA_L3 = CLWA_L1 - CLWA_L2
+CLWA_L4 = 0 "Credit Limit Worksheet B TODO"
+CLWA_L5 = CLWA_L3 - CLWA_L4
+
+"Part II-A"
+L15 := BOOLEAN
+L16a = L12 - L14
+L16b = L4 * $1,500
+L17 = math.min[L16a][L16b]
+L18a = f1040.L1a "FIXME"
+L18b = 0 "FIXME"
+L19 = if(L18a > $2,500) 0 else $2,500 - L18a
+L20 = L19 * 0.15
+
+"Part II-B TODO"
+
+L27 = math.min[L17][L20]
+
+REFUNDABLE_CREDIT = L27
