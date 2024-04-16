@@ -58,6 +58,7 @@ extern list<Declaration>* root;
 
 %token UNINITDEC ":="
 %token INITIALIZE "<-"
+%token APPROX_INITIALIZE "<~"
 
 %token ZEROES
 %token RANGE
@@ -100,7 +101,9 @@ Decl_List:      Decl_List Declaration { $1->push_back(*$2); $$ = $1; }
 
 Declaration:    IDENTIFIER ":=" Type { $$ = new Declaration{*$1,$3}; }
         |       IDENTIFIER '=' Expression { $$ = new Declaration{*$1,$3,false}; }
+        |       IDENTIFIER '~' Expression { $$ = new Declaration{*$1,$3,false}; $$->autorounding=true; }
         |       Identifier "<-" Expression { $$ = new Declaration{static_cast<Identifier_Expression*>($1)->identifier,$3,true}; }
+        |       Identifier "<~" Expression { $$ = new Declaration{static_cast<Identifier_Expression*>($1)->identifier,$3,true}; $$->autorounding=true; }
         |       ASSERT '(' Expression ')' { $$ = new Declaration{"assert",$3,false}; }
         |       Identifier "<-" ZEROES Expression RANGE '[' Expression ',' Expression ']' DELTA Expression TOLERANCE Expression
                 {

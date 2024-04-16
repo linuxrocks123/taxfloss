@@ -71,7 +71,9 @@ NUMBER { return NUMBER; }
  /*Assignment*/
 :=  { return UNINITDEC; }
 =   { return '='; }
+~   { return '~'; }
 \<- { return INITIALIZE; }
+\<~ { return APPROX_INITIALIZE; }
 
  /*Computation*/
 \\ { return '\\'; }

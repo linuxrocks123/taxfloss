@@ -1,0 +1,16 @@
+BRACKETS = [x] { true : irs.BRACKETS[x][f1040.Filing_Status] }
+
+TAX_internal = [x] { 0 <= x <= BRACKETS[0.1] : x*0.1,
+                   BRACKETS[0.1] < x <= BRACKETS[0.12] : TAX_internal[BRACKETS[0.1]]+(x-BRACKETS[0.1])*0.12,
+                   BRACKETS[0.12] < x <= BRACKETS[0.22] : TAX_internal[BRACKETS[0.12]]+(x-BRACKETS[0.12])*0.22,
+                   BRACKETS[0.22] < x <= BRACKETS[0.24] : TAX_internal[BRACKETS[0.22]]+(x-BRACKETS[0.22])*0.24,
+                   BRACKETS[0.24] < x <= BRACKETS[0.32] : TAX_internal[BRACKETS[0.24]]+(x-BRACKETS[0.24])*0.32,
+                   BRACKETS[0.32] < x <= BRACKETS[0.35] : TAX_internal[BRACKETS[0.32]]+(x-BRACKETS[0.32])*0.35,
+                   x > BRACKETS[0.35] : TAX_internal[BRACKETS[0.35]]+(x-BRACKETS[0.35])*0.37 }
+
+TAX = [x] { 0 <= x < 5 : (TAX_internal[x \_ 5] + TAX_internal[(x + 5) \_ 5])*0.5 \ 1,
+            5 <= x < 15 : (TAX_internal[5] + TAX_internal[15])*0.5 \ 1,
+            15 <= x < 25 : (TAX_internal[15] + TAX_internal[25])*0.5 \ 1,
+            25 <= x < 3000 : (TAX_internal[x \_ 25] + TAX_internal[(x + 25) \_ 25])*0.5 \ 1,
+            3000 <= x < 100000 : (TAX_internal[x \_ 50] + TAX_internal[(x + 50) \_ 50])*0.5 \ 1,
+            x >= 100000 : TAX_internal[x] }

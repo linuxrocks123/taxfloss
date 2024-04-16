@@ -45,15 +45,24 @@ void Executor::visit(Declaration& decl)
           }
 
           //Regex Post-Modifier Processing
-          for(Declaration* post_modifier : regex_post_modifiers)
-               if(retval.type==post_modifier->rhs.regex_data->type && regex_match(decl.identifier,post_modifier->rhs.regex_data->matcher))
-               {
-                    unordered_map<string,Value> local_symtab;
-                    local_symtab[post_modifier->identifier] = retval;
-                    local_symtabs.push(local_symtab);
-                    post_modifier->rhs.regex_data->post_modifier_expression->visit_with(*this);
-                    local_symtabs.pop();
-               }
+          if(decl.autorounding)
+          {
+               bool rounding_performed = false;
+               for(Declaration* post_modifier : regex_post_modifiers)
+                    if(retval.type==post_modifier->rhs.regex_data->type && regex_match(decl.identifier,post_modifier->rhs.regex_data->matcher))
+                    {
+                         unordered_map<string,Value> local_symtab;
+                         local_symtab[post_modifier->identifier] = retval;
+                         local_symtabs.push(local_symtab);
+                         post_modifier->rhs.regex_data->post_modifier_expression->visit_with(*this);
+                         local_symtabs.pop();
+                         rounding_performed = true;
+                         break;
+                    }
+
+               if(!rounding_performed)
+                    throw "Variable "+lhs+" declared with autorounding, but no matching regex post-modifier was found.";
+          }
           
           get_symbol(lhs) = retval;
      }

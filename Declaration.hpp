@@ -34,6 +34,7 @@ struct Declaration
           Solver_Data* solver_data;
           Regex_Data* regex_data;
      } rhs;
+     bool autorounding = false;
 
      Declaration(string identifier_, Type type_)
           : identifier(identifier_), init_status(UNINITIALIZED) { rhs.type = type_; }

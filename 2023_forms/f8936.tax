@@ -1,0 +1,26 @@
+L1a = f1040.L11
+L1b = 0 "TODO"
+L1c = 0 "TODO"
+L1d = 0 "TODO"
+L1e = 0 "TODO"
+L2 = L1a + L1b + L1c + L1d + L1e
+L3a := NUMBER
+L3b = 0 "TODO"
+L3c = 0 "TODO"
+L3d = 0 "TODO"
+L3e = 0 "TODO"
+L4 = L3a + L3b + L3c + L3d + L3e
+L5 = math.min[L2][L4]
+L6 = 0 "TODO"
+L7 = 0 "TODO"
+L8 = 0 "TODO"
+L9 = f8936sa.L12
+L10 = f1040.L18
+L11 = schedule_3.L1 + schedule_3.L2 + schedule_3.L3 + schedule_3.L4 + schedule_3.L5b + schedule_3.L6d + schedule_3.L6l + schedule_3.L6m
+L12 = L10 - L11
+L13 = if(L5 <= irs.f8936_NEW_CLEAN_VEHICLE_THRESHOLDS[f1040.Filing_Status]) math.min[L9][L12] else 0
+L14 = f8936sa.L17
+L15 = f1040.L18
+L16 = schedule_3.L1 + schedule_3.L2 + schedule_3.L3 + schedule_3.L4 + schedule_3.L5b + schedule_3.L6d + schedule_3.L6l
+L17 = L15 - L16
+L18 = if(L5 <= irs.f8936_USED_CLEAN_VEHICLE_THRESHOLDS[f1040.Filing_Status]) math.min[L14][L17] else 0
